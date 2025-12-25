@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Discord Webhook Sender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #020617;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      width: 100%;
+      max-width: 400px;
+    }
+    textarea, button {
+      width: 100%;
+      margin-top: 0.75rem;
+      padding: 0.6rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-size: 1rem;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    button {
+      background: #5865f2;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Send Discord Message</h2>
+    <textarea id="message" placeholder="Type your message..."></textarea>
+    <button id="sendBtn">Send</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    // 🔴 PUT YOUR WEBHOOK URL HERE
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/XXXXXXXX/XXXXXXXX";
+
+    const sendBtn = document.getElementById("sendBtn");
+    const statusEl = document.getElementById("status");
+
+    sendBtn.addEventListener("click", async () => {
+      const content = document.getElementById("message").value.trim();
+      if (!content) return;
+
+      sendBtn.disabled = true;
+      statusEl.textContent = "Sending...";
+
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            content: content
+          })
+        });
+
+        if (!res.ok) throw new Error("Request failed");
+
+        statusEl.textContent = "Message sent ✅";
+        document.getElementById("message").value = "";
+      } catch (err) {
+        statusEl.textContent = "Failed to send ❌";
+      } finally {
+        sendBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
